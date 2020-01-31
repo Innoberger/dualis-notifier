@@ -2,7 +2,7 @@ json-api=https://neinkob.de/grades
 
 start-message=Applikation Dualis-Notifier wurde gestartet. Sobald eine neue Note eingetragen wurde, erhälst du eine Benachrichtigung.
 stop-message=Applikation Dualis-Notifier wurde beendet. Du erhälst nun keine Benachrichtigungen mehr.
-new-grade-message=In Dualis wurde eine neue Note eingetragen: https://dualis.dhbw.de
+new-grade-message=In Dualis wurden folgende Noten eingetragen oder verändert:\n\n%GRADES%\n\nMehr Infos siehe: https://dualis.dhbw.de
 
 bot-phone=
 user-phone=

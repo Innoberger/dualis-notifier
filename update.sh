@@ -18,8 +18,40 @@ DUALIS_PASSWORD=$(prop "dualis-password-base64")
 
 function call_api
 {
-    curl -u $(echo "$DUALIS_USERNAME" | base64 -d):$(echo "$DUALIS_PASSWORD" | base64 -d) -o "$DIR/grades.json" "$API"
+    apiJson=$(curl -u $(echo "$DUALIS_USERNAME" | base64 -d):$(echo "$DUALIS_PASSWORD" | base64 -d) "$API")
+    extract_grades "$apiJson" > "$DIR/grades.json"
 }
+
+function extract_grades
+{
+   raw="$1"
+   json="["
+   IFS="]" read -ra array <<< "$(echo $raw)"
+
+   for block in "${array[@]}"
+   do
+      if ! [[ "$block" == *"name"* ]]
+      then
+         continue
+      fi
+
+      module=$(echo "$block" | sed 's/.*"name":"\([^"]*\)".*/\1/g')
+      exam=$(echo "$block" | sed 's/.*"exam":"\([^"]*\)".*/\1/g')
+      grade=$(echo "$block" | sed 's/.*"grade":"\([^"]*\)".*/\1/g')
+
+      if [[ "$grade" == "-" ]] || [[ "$grade" == *"{"* ]]
+      then
+         continue
+      fi
+
+      json="$json\n{ \"module\": \"$module\", \"exam\": \"$exam\", \"grade\": \"$grade\" },"
+   done
+
+   json="${json::-1}\n]"
+
+   echo -e "$json"
+}
+
 
 if [[ ! -d "$DIR" ]]
 then
@@ -39,9 +71,34 @@ fi
 
 mv "$DIR/grades.json" "$DIR/grades.json.old"
 call_api
-diff "$DIR/grades.json.old" "$DIR/grades.json"
+diff "$DIR/grades.json.old" "$DIR/grades.json" > /dev/null
 
-if [ "$?" -ne 0 ]
+if [ "$?" -eq 0 ]
 then
-   echo -e "$MSG" | signal-cli -u "$BOT" send "$USER"
+   exit 0
 fi
+
+diff=$(diff --changed-group-format="%<" --unchanged-group-format="" "$DIR/grades.json" "$DIR/grades.json.old")
+diff=$(echo "[${diff::-1}]" | jq .)
+
+echo "$diff"
+changes=""
+IFS='
+'
+
+for change in $(echo "$diff" | jq -c '.[]')
+do
+   changeModule=$(echo "$change" | jq -r .module)
+   changeExam=$(echo "$change" | jq -r .exam)
+   changeGrade=$(echo "$change" | jq -r .grade)
+   changes="$changes\nModul: $changeModule\nPrüfung: $changeExam\nNote: $changeGrade\n"
+done
+
+if [ "$changes" == "" ]
+then
+   exit 0
+fi
+
+MSG="${MSG//%GRADES%/$changes}"
+
+echo -e "$MSG" | signal-cli -u "$BOT" send "$USER"
