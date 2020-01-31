@@ -1,4 +1,5 @@
 json-api=https://neinkob.de/grades
+signal-cli=
 
 start-message=Applikation Dualis-Notifier wurde gestartet. Sobald eine neue Note eingetragen wurde, erhälst du eine Benachrichtigung.
 stop-message=Applikation Dualis-Notifier wurde beendet. Du erhälst nun keine Benachrichtigungen mehr.

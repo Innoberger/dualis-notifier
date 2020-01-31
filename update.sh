@@ -9,6 +9,7 @@ function prop
 }
 
 API=$(prop "json-api")
+SIGNAL=$(prop "signal-cli")
 MSG=$(prop "new-grade-message")
 BOT=$(prop "bot-phone")
 USER=$(prop "user-phone")
@@ -22,6 +23,9 @@ function call_api
     extract_grades "$apiJson" > "$DIR/grades.json"
 }
 
+# Credit for the following function goes to neinkob15.
+# I built in some modifications to work in this context.
+# https://github.com/neinkob15/Dualis-API/blob/master/notenCompare.sh
 function extract_grades
 {
    raw="$1"
@@ -101,4 +105,4 @@ fi
 
 MSG="${MSG//%GRADES%/$changes}"
 
-echo -e "$MSG" | signal-cli -u "$BOT" send "$USER"
+echo -e "$MSG" | "$SIGNAL" -u "$BOT" send "$USER"

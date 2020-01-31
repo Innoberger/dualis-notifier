@@ -7,8 +7,9 @@ function prop
     grep "${1}" "$CONFIG" | cut -d '=' -f2
 }
 
+SIGNAL=$(prop "signal-cli")
 MSG=$(prop "start-message")
 BOT=$(prop "bot-phone")
 USER=$(prop "user-phone")
 
-echo -e "$MSG" | signal-cli -u "$BOT" send "$USER"
+echo -e "$MSG" | "$SIGNAL" -u "$BOT" send "$USER"

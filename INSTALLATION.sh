@@ -6,7 +6,17 @@ CONFIG="$DIR/config.properties"
 echo "This is the dualis-notifier installation script."
 echo "The script has been published by Innoberger / Fynn Arnold under the MIT license."
 echo "Visit https://github.com/Innoberger/dualis-notifier for more information."
-echo ""
+echo
+
+echo "Where is your signal-cli installation?"
+echo "Please type the full path, like this /opt/signal-cli-VERSION/bin/signal-cli"
+read SIGNAL_CLI
+
+while [ -z "$SIGNAL_CLI" ]
+do
+   echo "This value can not be empty. Please try again"
+   read SIGNAL_CLI
+done
 
 echo "What phone number is your signal bot using?"
 echo "Please use this format: +49123456789"
@@ -41,7 +51,7 @@ done
 echo "What is your Dualis account password?"
 echo "Please note that your username and password will be base64 encoded"
 read -s DUALIS_PASSWORD
-echo ""
+echo
 
 while [ -z "$DUALIS_PASSWORD" ]
 do
@@ -53,6 +63,8 @@ DUALIS_USERNAME=$(echo -e "$DUALIS_USERNAME" | tr -d '\n\r' | base64)
 DUALIS_PASSWORD=$(echo -e "$DUALIS_PASSWORD" | tr -d '\n\r' | base64)
 
 mv "$CONFIG.template" "$CONFIG"
+
+sed -i "s/signal-cli=/signal-cli=$SIGNAL_CLI/g" "$CONFIG"
 sed -i "s/bot-phone=/bot-phone=$BOT_PHONE/g" "$CONFIG"
 sed -i "s/user-phone=/user-phone=$USER_PHONE/g" "$CONFIG"
 sed -i "s/dualis-username-base64=/dualis-username-base64=$DUALIS_USERNAME/g" "$CONFIG"
