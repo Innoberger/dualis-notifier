@@ -105,4 +105,4 @@ fi
 
 MSG="${MSG//%GRADES%/$changes}"
 
-echo -e "$MSG" | "$SIGNAL" -u "$BOT" send "$USER"
+echo -ne "$MSG" | "$SIGNAL" -u "$BOT" send "$USER"
