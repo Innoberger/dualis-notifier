@@ -74,9 +74,7 @@ echo "Config setup successful"
 
 crontab -l > "$DIR/crontab.tmp"
 echo -e "\n# dualis-notifier" >> "$DIR/crontab.tmp"
-echo "0 10 * * 1-5 $DIR/start.sh" >> "$DIR/crontab.tmp"
-echo "0,15,30,45 10-16 * * 1-5 $DIR/update.sh" >> "$DIR/crontab.tmp"
-echo "0 16 * * 1-5 $DIR/stop.sh" >> "$DIR/crontab.tmp"
+echo "0,15,30,45 10-17 * * 1-5 $DIR/notify.sh" >> "$DIR/crontab.tmp"
 crontab "$DIR/crontab.tmp"
 rm -f "$DIR/crontab.tmp"
 
@@ -89,7 +87,7 @@ if [ -z "$TEST_MSG" ] || [ "$TEST_MSG" = "y" ] || [ "$TEST_MSG" = "Y" ]
 then
    echo "Test signal message has been sent"
    echo "If you do not receive a message on your phone in a few seconds, please check the config file"
-   echo -e "Hallo! Das ist eine Test-Nachricht der Anwendung Dualis-Notifier. Wenn du diese Nachricht erhalten hast, wurde die Applikation richtig installiert." | signal-cli -u "$BOT_PHONE" send "$USER_PHONE"
+   echo -ne "Hallo! Das ist eine Test-Nachricht der Anwendung Dualis-Notifier. Wenn du diese Nachricht erhalten hast, wurde die Applikation richtig installiert." | "$SIGNAL_CLI" -u "$BOT_PHONE" send "$USER_PHONE"
 fi
 
 echo "All done"
